@@ -4,17 +4,28 @@ import oobb
 import oobb_base
 
 clearance_design = 1
+cd = clearance_design
 clearance_wall = 1/2
 clearance_bottom = 1
 
 width_hinge = 20
-width_latch = 30
-width_latch_knob = 5
 width_hinge_inside = width_hinge - 10
+
+
+extra_latch_side = 5
+width_latch_inside = 5
+width_latch_knob = 5
+els = extra_latch_side
+
+extra_for_30_mm_bolt_clearance = 8
+extra = extra_for_30_mm_bolt_clearance
+
+width_latch = els + width_latch_inside + cd + els + width_latch_knob + cd + els + width_latch_inside + cd + extra
+
 diameter_hinge_inside = 14
 diameter_hinge_bottom = 12
 diameter_latch_bottom = 15
-diameter_latch_knob = 12
+diameter_latch_knob = 14
 
 thickness_lid_wall_exterior = 1.5
 gap_between_lid_and_wall = 0.75
@@ -82,8 +93,8 @@ def make_scad(**kwargs):
             sizes.append({"width": 3, "height": 2})             
             sizes.append({"width": 4, "height": 3})
         
-        #sizes.append({"width": 2, "height": 1})             
-        sizes.append({"width": 3, "height": 3})             
+        sizes.append({"width": 2, "height": 1})             
+        #sizes.append({"width": 3, "height": 3})             
         
 
         
@@ -91,14 +102,14 @@ def make_scad(**kwargs):
 
 
         trays = []
-        trays.append({"width": 3, "height": 3})
-        #trays.append({"width": 2, "height": 2})
+        #trays.append({"width": 3, "height": 3})
+        trays.append({"width": 2, "height": 2})
         
         if not run_fast:
             trays.append({"width": 3, "height": 2})   
             trays.append({"width": 3, "height": 3})
-        #thicknesses = [15]
-        thicknesses = [20]
+        thicknesses = [15]
+        #thicknesses = [20]
         if not run_fast:
             thicknesses.append(20)
         
@@ -218,7 +229,7 @@ def get_latch(thing, **kwargs):
     pos = kwargs.get("pos", [0, 0, 0])
     p3 = copy.deepcopy(kwargs)
     pos1 = copy.deepcopy(pos)
-    pos1[0] += 135
+    #pos1[0] += 135
     p3["pos"] = pos1
     p3["test"] = True
     get_latch_bottom(thing, **p3)
@@ -232,7 +243,7 @@ def get_latch(thing, **kwargs):
     
     p3 = copy.deepcopy(kwargs)
     pos1 = copy.deepcopy(pos)
-    pos1[0] += 0
+    pos1[0] += 90
     p3["pos"] = pos1
     
     get_latch_knob(thing, **p3)
@@ -264,9 +275,9 @@ def get_latch_bottom(thing, **kwargs):
     d = depth - depth_lid_overhang   
     size = [w, h, d]
     p3["size"] = size
-    pos1 = copy.deepcopy(pos_plate)
-    shift_latch = 5
-    pos1[0] += shift_latch
+    pos1 = copy.deepcopy(pos_plate)    
+    extra_side = extra_latch_side
+    pos1[0] += w/2 - extra_side - (width_latch_inside+clearance_design)/2
     pos1[2] += (15 - depth)  /2    
     p3["pos"] = pos1
     #p3["m"] = "#"
@@ -285,8 +296,7 @@ def get_latch_bottom(thing, **kwargs):
     d = depth - depth_lid_overhang    
     size = [w, h, d]
     p3["size"] = size
-    pos1 = copy.deepcopy(pos_plate)
-    pos1[0] += shift_latch
+    pos1 = copy.deepcopy(pos1)
     pos1[1] += 7.5  - h / 2
     if test:
         pos1[1] += extra_test
@@ -295,31 +305,12 @@ def get_latch_bottom(thing, **kwargs):
     #p3["m"] = "#"
     oobb_base.append_full(thing,**p3)
 
-    #add connecting cube bottom
-    p3 = copy.deepcopy(kwargs)
-    p3["type"] = "p"
-    p3["shape"] = f"oobb_cube"
-    w = width_hinge
-    h = height * 15 - (15 - diameter_hinge_bottom)
-    d = depth - 15/2
-    size = [w, h, d]
-    p3["size"] = size
-    pos1 = copy.deepcopy(pos_plate)
-    pos1[1] += h/2
-    pos1[2] += (15 - depth)  /2
-    p3["pos"] = pos1
-    #p3["m"] = "#"
-    #oobb_base.append_full(thing,**p3)
-
-    
     extra_rear = 3
     #add cutout central
     p3 = copy.deepcopy(kwargs)
     p3["type"] = "n"
     p3["shape"] = f"oobb_cube"
-    global width_hinge_inside
-    w = width_hinge_inside + clearance_design
-    global clearance_wall
+    w = width_latch_inside + clearance_design
     h = 15 - clearance_wall + extra_rear
     d = depth
     p3["zz"] = "middle"
@@ -334,19 +325,14 @@ def get_latch_bottom(thing, **kwargs):
 
 
     #add cutout knob
-    p3 = copy.deepcopy(kwargs)
-    p3["type"] = "n"
-    p3["shape"] = f"oobb_cube"
+    p3 = copy.deepcopy(p3)
     w = width_latch_knob + clearance_design
-    h = 15 - clearance_wall + extra_rear
-    d = depth
-    p3["zz"] = "middle"
+    h = h
+    d = d
     size = [w, h, d]
     p3["size"] = size 
-    pos1 = copy.deepcopy(pos)
-    pos1[0] += 12
-    pos1[1] += -extra_rear/2
-    pos1[2] += (15 - depth)  /2
+    pos1 = copy.deepcopy(pos1)
+    pos1[0] +=  w + extra_side
     p3["pos"] = pos1
     #p3["m"] = "#"
     oobb_base.append_full(thing,**p3)
@@ -356,21 +342,36 @@ def get_latch_bottom(thing, **kwargs):
     #add screw
     p3 = copy.deepcopy(kwargs)
     p3["type"] = "n"
-    p3["shape"] = f"oobb_screw_socket_cap"
+    p3["shape"] = f"oobb_hole"
     p3["radius_name"] = radius_screw
     pos2 = copy.deepcopy(pos)
-    pos2[0] += width_latch / 2 + shift_latch
+    pos2[0] += 0 - (width_latch_inside + clearance_design)/ 2 - extra_latch_side
     p3["pos"] = pos2    
-    p3["nut"] = False
     p3["depth"] = width_latch
-    if radius_screw == "m6":
-        p3["depth"] += 2
     p3["rot"] = [0, 90, 0]
-    p3["rotation_nut"] = [0,0,360/12]
-    p3["overhang"] = False
     #p3["m"] = "#"
     oobb_base.append_full(thing,**p3)
+    
+    #add nut
+    p3 = copy.deepcopy(p3)
+    p3["type"] = "n"
+    p3["shape"] = f"oobb_nut"
+    p3["radius_name"] = radius_screw
+    p3["depth"] = 25
+    pos2 = copy.deepcopy(pos)
+    if True:
+        extra_latch_side
+        els = extra_latch_side
+        cd = clearance_design
 
+        shift_start = (width_latch_inside + cd)/ 2 + els
+        shift = els + width_latch_inside + cd + els + width_latch_knob + cd 
+        pos2[0] = -shift_start + shift
+    #pos2[2] += 15    
+    p3["pos"] = pos2
+    p3["hole"] = False
+    #p3["m"] = "#"
+    oobb_base.append_full(thing,**p3)
     
 
     
@@ -1426,7 +1427,8 @@ def get_main_body_basic(thing, **kwargs):
 
 def get_main_body_array(thing, **kwargs):
     #default_shape_pocket = "oobb_cube"
-    default_shape_pocket = "sphere_rectangle"
+    default_shape_pocket = "rounded_rectangle"
+    #default_shape_pocket = "sphere_rectangle"
     global clearance_wall, clearance_bottom
 
     
