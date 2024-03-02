@@ -11,7 +11,7 @@ clearance_bottom = 1
 width_hinge = 20
 width_hinge_inside = width_hinge - 10
 
-
+diameter_latch_inside = 14-6
 extra_latch_side = 5
 width_latch_inside = 5
 width_latch_knob = 5
@@ -50,7 +50,7 @@ def make_scad(**kwargs):
         #filter = "lid"
         #filter = "latch"
 
-        kwargs["save_type"] = "none"
+        #kwargs["save_type"] = "none"
         kwargs["save_type"] = "all"
         
         kwargs["overwrite"] = True
@@ -215,205 +215,6 @@ def make_scad(**kwargs):
                 print(f"done {part['name']}")
             else:
                 print(f"skipping {part['name']}")
-
-def get_latch(thing, **kwargs):  
-
-    #adding variables
-    global clearance_design
-    kwargs["clearance_design"] = clearance_design
-    global clearance_wall
-    global width_hinge
-    kwargs["width_hinge"] = width_hinge
-
-
-    pos = kwargs.get("pos", [0, 0, 0])
-    p3 = copy.deepcopy(kwargs)
-    pos1 = copy.deepcopy(pos)
-    #pos1[0] += 135
-    p3["pos"] = pos1
-    p3["test"] = True
-    get_latch_bottom(thing, **p3)
-    
-    
-    p3 = copy.deepcopy(kwargs)
-    pos1 = copy.deepcopy(pos)
-    pos1[0] += 45
-    p3["pos"] = pos1
-    get_latch_top(thing, **p3)
-    
-    p3 = copy.deepcopy(kwargs)
-    pos1 = copy.deepcopy(pos)
-    pos1[0] += 90
-    p3["pos"] = pos1
-    
-    get_latch_knob(thing, **p3)
-
-
-def get_latch_bottom(thing, **kwargs):
-    depth = kwargs.get("thickness", 4)
-    width = kwargs.get("width", 10)
-    height = kwargs.get("height", 10)
-    pos = kwargs.get("pos", [0, 0, 0])
-    pos_plate = copy.deepcopy(pos)
-    pos_plate[1] += 0
-    pos_plate[2] += -depth /2
-    prepare_print = kwargs.get("prepare_print", False)
-    radius_screw = kwargs.get("radius_screw", "m3")
-
-    # variable
-    global clearance_design
-    screw_rotation = kwargs.get("screw_rotation", False)
-    clearance_hinge_bottom = kwargs.get("clearance_hinge_bottom", True)
-    test = kwargs.get("test", False)
-    
-
-    extra_connecting_cube_height = 3
-    #add connecting cube rounded
-    p3 = copy.deepcopy(kwargs)
-    p3["type"] = "p"
-    p3["shape"] = f"rounded_rectangle"
-    
-    w = width_latch
-    h = 15 * height - extra_connecting_cube_height
-    d = depth - depth_lid_overhang   
-    size = [w, h, d]
-    p3["size"] = size
-    pos1 = copy.deepcopy(pos_plate)    
-    extra_side = extra_latch_side
-    pos1[0] += w/2 - extra_side - (width_latch_inside+clearance_design)/2 
-    pos1[1] += -(h - 15)/2
-    pos1[2] += (15 - depth)  /2    
-    p3["pos"] = pos1
-    #p3["m"] = "#"
-    oobb_base.append_full(thing,**p3)
-
-    #add connecting cube square bit
-    p3 = copy.deepcopy(kwargs)
-    p3["type"] = "p"
-    p3["shape"] = f"oobb_cube"
-    w = width_latch
-    extra_test = 3
-    radius_corner = 5
-    h = h  - radius_corner
-    if test:
-        h += extra_test
-    d = depth - depth_lid_overhang    
-    size = [w, h, d]
-    p3["size"] = size
-    pos1 = copy.deepcopy(pos1)
-    pos1[1] += radius_corner/2 + extra_test/2
-    pos1[2] += (15 - depth)  /2    
-    p3["pos"] = pos1
-    #p3["m"] = "#"
-    oobb_base.append_full(thing,**p3)
-
-    extra_rear = 3
-    #add cutout central
-    p3 = copy.deepcopy(kwargs)
-    p3["type"] = "n"
-    p3["shape"] = f"oobb_cube"
-    w = width_latch_inside + clearance_design
-    h = 15 - clearance_wall + extra_rear
-    d = depth
-    p3["zz"] = "middle"
-    size = [w, h, d]
-    p3["size"] = size 
-    pos1 = copy.deepcopy(pos)
-    pos1[1] += -extra_rear/2
-    pos1[2] += (15 - depth)  /2
-    p3["pos"] = pos1
-    #p3["m"] = "#"
-    oobb_base.append_full(thing,**p3)
-
-
-    #add cutout knob
-    p3 = copy.deepcopy(p3)
-    w = width_latch_knob + clearance_design
-    h = h
-    d = d
-    size = [w, h, d]
-    p3["size"] = size 
-    pos1 = copy.deepcopy(pos1)
-    pos1[0] +=  w + extra_side
-    p3["pos"] = pos1
-    #p3["m"] = "#"
-    oobb_base.append_full(thing,**p3)
-    
-    
-
-    #add screw
-    p3 = copy.deepcopy(kwargs)
-    p3["type"] = "n"
-    p3["shape"] = f"oobb_hole"
-    p3["radius_name"] = radius_screw
-    pos2 = copy.deepcopy(pos)
-    pos2[0] += 0 - (width_latch_inside + clearance_design)/ 2 - extra_latch_side
-    p3["pos"] = pos2    
-    p3["depth"] = width_latch
-    p3["rot"] = [0, 90, 0]
-    #p3["m"] = "#"
-    oobb_base.append_full(thing,**p3)
-    
-    #add nut
-    p3 = copy.deepcopy(p3)
-    p3["type"] = "n"
-    p3["shape"] = f"oobb_nut"
-    p3["radius_name"] = radius_screw
-    p3["depth"] = 25
-    pos2 = copy.deepcopy(pos)
-    if True:
-        extra_latch_side
-        els = extra_latch_side
-        cd = clearance_design
-
-        shift_start = (width_latch_inside + cd)/ 2 + els
-        shift = els + width_latch_inside + cd + els + width_latch_knob + cd 
-        pos2[0] = -shift_start + shift
-    #pos2[2] += 15    
-    p3["pos"] = pos2
-    p3["hole"] = False
-    #p3["m"] = "#"
-    oobb_base.append_full(thing,**p3)
-    
-
-    
-    
-
-
-def get_latch_top(thing, **kwargs):
-
-    get_hinge_top(thing, **kwargs)
-    
-
-def get_latch_knob(thing, **kwargs):
-
-    pos = kwargs.get("pos", [0, 0, 0])
-
-    #main cylinder
-    p3 = copy.deepcopy(kwargs)
-    p3["type"] = "p"
-    p3["shape"] = f"oobb_cylinder"
-    p3["radius"] = diameter_latch_knob / 2
-    p3["depth"] = width_latch_knob
-    pos1 = copy.deepcopy(pos)
-    p3["pos"] = pos1
-    #p3["m"] = "#"
-    oobb_base.append_full(thing,**p3)
-
-    #nut
-    p3 = copy.deepcopy(kwargs)
-    p3["type"] = "n"
-    p3["shape"] = f"oobb_nut"
-    p3["radius_name"] = "m3"
-    pos1 = copy.deepcopy(pos)
-    p3["pos"] = pos1
-    p3["hole"] = True
-    #p3["m"] = "#"
-    oobb_base.append_full(thing,**p3)
-
-
-
-
 
 
 def get_hinge(thing, **kwargs):  
@@ -673,7 +474,279 @@ def get_hinge_top(thing, **kwargs):
     p3["pos"] = pos1
     #p3["m"] = "#"
     oobb_base.append_full(thing,**p3)
+
+def get_latch(thing, **kwargs):  
+
+    #adding variables
+    global clearance_design
+    kwargs["clearance_design"] = clearance_design
+    global clearance_wall
+    global width_hinge
+    kwargs["width_hinge"] = width_hinge
+
+
+    pos = kwargs.get("pos", [0, 0, 0])
+    p3 = copy.deepcopy(kwargs)
+    pos1 = copy.deepcopy(pos)
+    #pos1[0] += 135
+    p3["pos"] = pos1
+    p3["test"] = True
+    get_latch_bottom(thing, **p3)
     
+    
+    p3 = copy.deepcopy(kwargs)
+    pos1 = copy.deepcopy(pos)
+    pos1[0] += 45
+    p3["pos"] = pos1
+    get_latch_top(thing, **p3)
+    
+    p3 = copy.deepcopy(kwargs)
+    pos1 = copy.deepcopy(pos)
+    pos1[0] += 90
+    p3["pos"] = pos1
+    
+    get_latch_knob(thing, **p3)
+
+
+def get_latch_bottom(thing, **kwargs):
+    depth = kwargs.get("thickness", 4)
+    width = kwargs.get("width", 10)
+    height = kwargs.get("height", 10)
+    pos = kwargs.get("pos", [0, 0, 0])
+    pos_plate = copy.deepcopy(pos)
+    pos_plate[1] += 0
+    pos_plate[2] += -depth /2
+    prepare_print = kwargs.get("prepare_print", False)
+    radius_screw = kwargs.get("radius_screw", "m3")
+
+    # variable
+    global clearance_design
+    screw_rotation = kwargs.get("screw_rotation", False)
+    clearance_hinge_bottom = kwargs.get("clearance_hinge_bottom", True)
+    test = kwargs.get("test", False)
+    
+
+    extra_connecting_cube_height = 3
+    #add connecting cube rounded
+    p3 = copy.deepcopy(kwargs)
+    p3["type"] = "p"
+    p3["shape"] = f"rounded_rectangle"
+    
+    w = width_latch
+    h = 15 * height - extra_connecting_cube_height
+    d = depth - depth_lid_overhang   
+    size = [w, h, d]
+    p3["size"] = size
+    pos1 = copy.deepcopy(pos_plate)    
+    extra_side = extra_latch_side
+    pos1[0] += w/2 - extra_side - (width_latch_inside+clearance_design)/2 
+    pos1[1] += -(h - 15)/2
+    pos1[2] += (15 - depth)  /2    
+    p3["pos"] = pos1
+    #p3["m"] = "#"
+    oobb_base.append_full(thing,**p3)
+
+    #add connecting cube square bit
+    p3 = copy.deepcopy(kwargs)
+    p3["type"] = "p"
+    p3["shape"] = f"oobb_cube"
+    w = width_latch
+    extra_test = 3
+    radius_corner = 5
+    h = h  - radius_corner
+    if test:
+        h += extra_test
+    d = depth - depth_lid_overhang    
+    size = [w, h, d]
+    p3["size"] = size
+    pos1 = copy.deepcopy(pos1)
+    pos1[1] += radius_corner/2 + extra_test/2
+    pos1[2] += (15 - depth)  /2    
+    p3["pos"] = pos1
+    #p3["m"] = "#"
+    oobb_base.append_full(thing,**p3)
+
+    extra_rear = 3
+    #add cutout central
+    p3 = copy.deepcopy(kwargs)
+    p3["type"] = "n"
+    p3["shape"] = f"oobb_cube"
+    w = width_latch_inside + clearance_design
+    h = 15 - clearance_wall + extra_rear
+    d = depth
+    p3["zz"] = "middle"
+    size = [w, h, d]
+    p3["size"] = size 
+    pos1 = copy.deepcopy(pos)
+    pos1[1] += -extra_rear/2
+    pos1[2] += (15 - depth)  /2
+    p3["pos"] = pos1
+    #p3["m"] = "#"
+    oobb_base.append_full(thing,**p3)
+
+
+    #add cutout knob
+    p3 = copy.deepcopy(p3)
+    w = width_latch_knob + clearance_design
+    h = h
+    d = d
+    size = [w, h, d]
+    p3["size"] = size 
+    pos1 = copy.deepcopy(pos1)
+    pos1[0] +=  w + extra_side
+    p3["pos"] = pos1
+    #p3["m"] = "#"
+    oobb_base.append_full(thing,**p3)
+    
+    
+
+    #add screw
+    p3 = copy.deepcopy(kwargs)
+    p3["type"] = "n"
+    p3["shape"] = f"oobb_hole"
+    p3["radius_name"] = radius_screw
+    pos2 = copy.deepcopy(pos)
+    pos2[0] += 0 - (width_latch_inside + clearance_design)/ 2 - extra_latch_side
+    p3["pos"] = pos2    
+    p3["depth"] = width_latch
+    p3["rot"] = [0, 90, 0]
+    #p3["m"] = "#"
+    oobb_base.append_full(thing,**p3)
+    
+    #add nut
+    p3 = copy.deepcopy(p3)
+    p3["type"] = "n"
+    p3["shape"] = f"oobb_nut"
+    p3["radius_name"] = radius_screw
+    p3["depth"] = 25
+    pos2 = copy.deepcopy(pos)
+    if True:
+        extra_latch_side
+        els = extra_latch_side
+        cd = clearance_design
+
+        shift_start = (width_latch_inside + cd)/ 2 + els
+        shift = els + width_latch_inside + cd + els + width_latch_knob + cd 
+        pos2[0] = -shift_start + shift
+    #pos2[2] += 15    
+    p3["pos"] = pos2
+    p3["hole"] = False
+    #p3["m"] = "#"
+    oobb_base.append_full(thing,**p3)
+    
+
+def get_latch_top(thing, **kwargs):       
+    
+    depth = kwargs.get("thickness", 4)
+    #depth not used always 15
+    depth = 15
+    width = kwargs.get("width", 10)
+    height = kwargs.get("height", 10)
+    pos = kwargs.get("pos", [0, 0, 0])
+    pos_plate = copy.deepcopy(pos)
+    pos_plate[1] += -height * 15 / 4
+    pos_plate[2] += -depth /2
+    prepare_print = kwargs.get("prepare_print", False)
+    width_hinge = kwargs.get("width_hinge", 5)
+
+    radius_screw = kwargs.get("radius_screw", "m3")
+
+    # variable
+    clearance_design = kwargs.get("clearance_design", 0.5)
+    depth_lid = kwargs.get("depth_lid", 3)
+
+    #add main cylinder
+    p3 = copy.deepcopy(kwargs)
+    p3["type"] = "p"
+    p3["shape"] = f"oobb_cylinder"  
+    global diameter_hinge_inside   
+    radius_hinge_top = diameter_latch_inside / 2
+    p3["radius"] = radius_hinge_top
+    d = width_latch_inside
+    p3["depth"] = d
+    p3["rot"] = [0, 90, 0]
+    p3["zz"] = "bottom"
+    #p3["m"] = "#"
+    pos1 = copy.deepcopy(pos)         
+    pos1[0] += -d/2
+    p3["pos"] = pos1
+    oobb_base.append_full(thing,**p3)
+
+    #add cube to top
+    p3 = copy.deepcopy(kwargs)
+    p3["type"] = "p"
+    p3["shape"] = f"oobb_cube"
+    w = width_latch_inside
+    r = diameter_latch_inside
+    h = r
+    d = depth/2
+    size = [w, h, d]
+    p3["size"] = size    
+    pos1 = copy.deepcopy(pos)
+    p3["pos"] = pos1
+    pos1[1] += 0
+    #p3["m"] = "#"
+    oobb_base.append_full(thing,**p3)
+      
+    #add attachment
+    p3 = copy.deepcopy(kwargs)
+    p3["type"] = "p"
+    p3["shape"] = f"oobb_cube"
+    w = width_latch_inside
+    h = ((height-0.5)*15) + diameter_latch_inside/2
+    d = depth_lid
+    size = [w, h, d]
+    p3["size"] = size
+    pos1 = copy.deepcopy(pos)
+    pos1[1] += ((height-0.5)*15) / 2 - diameter_latch_inside/4
+    pos1[2] += depth/2
+    p3["pos"] = pos1
+    #p3["m"] = "#"
+    oobb_base.append_full(thing,**p3)
+
+    # add hole
+    p3 = copy.deepcopy(kwargs)
+    p3["type"] = "n"
+    p3["shape"] = f"oobb_hole"
+    p3["radius_name"] = radius_screw
+    d = width_hinge_inside
+    p3["depth"] = d
+    p3["rot"] = [0, 90, 0]    
+    pos1 =  copy.deepcopy(pos)
+    pos1[0] += -d/2
+    p3["pos"] = pos1
+    #p3["m"] = "#"
+    oobb_base.append_full(thing,**p3)
+
+    
+
+def get_latch_knob(thing, **kwargs):
+
+    pos = kwargs.get("pos", [0, 0, 0])
+
+    #main cylinder
+    p3 = copy.deepcopy(kwargs)
+    p3["type"] = "p"
+    p3["shape"] = f"oobb_cylinder"
+    p3["radius"] = diameter_latch_knob / 2
+    p3["depth"] = width_latch_knob
+    pos1 = copy.deepcopy(pos)
+    p3["pos"] = pos1
+    #p3["m"] = "#"
+    oobb_base.append_full(thing,**p3)
+
+    #nut
+    p3 = copy.deepcopy(kwargs)
+    p3["type"] = "n"
+    p3["shape"] = f"oobb_nut"
+    p3["radius_name"] = "m3"
+    pos1 = copy.deepcopy(pos)
+    p3["pos"] = pos1
+    p3["hole"] = True
+    #p3["m"] = "#"
+    oobb_base.append_full(thing,**p3)
+
+
 def get_lid(thing, **kwargs):
     depth = kwargs.get("thickness", 4)
     height = kwargs.get("height", 10)
@@ -756,8 +829,7 @@ def get_lid(thing, **kwargs):
         p4 = copy.deepcopy(p3)
         p4["pos"] = pos1
         get_latch_top(thing, **p4)
-
-    
+   
 
 def get_lid_basic(thing, **kwargs):
     depth = kwargs.get("thickness", 4)
