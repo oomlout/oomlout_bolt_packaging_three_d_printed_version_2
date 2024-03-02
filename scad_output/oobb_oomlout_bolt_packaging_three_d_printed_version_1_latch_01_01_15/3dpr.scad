@@ -34,7 +34,7 @@ difference() {
 			cube(size = [5, 10.2500000000, 6]);
 		}
 		translate(v = [90, 0, -2.5000000000]) {
-			cylinder(h = 5, r = 7.0000000000);
+			cylinder(h = 5, r = 6.5000000000);
 		}
 	}
 	union() {

@@ -25,7 +25,7 @@ width_latch = els + width_latch_inside + cd + els + width_latch_knob + cd + els 
 diameter_hinge_inside = 14
 diameter_hinge_bottom = 12
 diameter_latch_bottom = 15
-diameter_latch_knob = 14
+diameter_latch_knob = 13
 
 thickness_lid_wall_exterior = 1.5
 gap_between_lid_and_wall = 0.75
@@ -39,8 +39,8 @@ def main(**kwargs):
 def make_scad(**kwargs):
     parts = []
 
-    #run_fast = True
-    run_fast = False
+    run_fast = True
+    #run_fast = False
 
     # save_type variables
     if True:
@@ -93,8 +93,8 @@ def make_scad(**kwargs):
             sizes.append({"width": 3, "height": 2})             
             sizes.append({"width": 4, "height": 3})
         
-        sizes.append({"width": 2, "height": 1})             
-        #sizes.append({"width": 3, "height": 3})             
+        #sizes.append({"width": 2, "height": 1})             
+        sizes.append({"width": 3, "height": 3})             
         
 
         
@@ -102,14 +102,14 @@ def make_scad(**kwargs):
 
 
         trays = []
-        #trays.append({"width": 3, "height": 3})
-        trays.append({"width": 2, "height": 2})
+        trays.append({"width": 3, "height": 3})
+        #trays.append({"width": 2, "height": 2})
         
         if not run_fast:
             trays.append({"width": 3, "height": 2})   
             trays.append({"width": 3, "height": 3})
-        thicknesses = [15]
-        #thicknesses = [20]
+        #thicknesses = [15]
+        thicknesses = [20]
         if not run_fast:
             thicknesses.append(20)
         
@@ -561,7 +561,7 @@ def get_latch_bottom(thing, **kwargs):
     p3["size"] = size
     pos1 = copy.deepcopy(pos1)
     pos1[1] += radius_corner/2 + extra_test/2
-    pos1[2] += (15 - depth)  /2    
+    pos1[2] += 0
     p3["pos"] = pos1
     #p3["m"] = "#"
     oobb_base.append_full(thing,**p3)
