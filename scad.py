@@ -17,7 +17,7 @@ width_latch_inside = 5
 width_latch_knob = 5
 els = extra_latch_side
 
-extra_for_30_mm_bolt_clearance = 8
+extra_for_30_mm_bolt_clearance = 12
 extra = extra_for_30_mm_bolt_clearance
 
 width_latch = els + width_latch_inside + cd + els + width_latch_knob + cd + els + width_latch_inside + cd + extra
@@ -48,9 +48,9 @@ def make_scad(**kwargs):
         #filter = "main_body"
         #filter = "hinge"
         #filter = "lid"
-        filter = "latch"
+        #filter = "latch"
 
-        #kwargs["save_type"] = "none"
+        kwargs["save_type"] = "none"
         kwargs["save_type"] = "all"
         
         kwargs["overwrite"] = True
@@ -266,18 +266,22 @@ def get_latch_bottom(thing, **kwargs):
     clearance_hinge_bottom = kwargs.get("clearance_hinge_bottom", True)
     test = kwargs.get("test", False)
     
+
+    extra_connecting_cube_height = 3
     #add connecting cube rounded
     p3 = copy.deepcopy(kwargs)
     p3["type"] = "p"
     p3["shape"] = f"rounded_rectangle"
+    
     w = width_latch
-    h = height*15 
+    h = 15 * height - extra_connecting_cube_height
     d = depth - depth_lid_overhang   
     size = [w, h, d]
     p3["size"] = size
     pos1 = copy.deepcopy(pos_plate)    
     extra_side = extra_latch_side
-    pos1[0] += w/2 - extra_side - (width_latch_inside+clearance_design)/2
+    pos1[0] += w/2 - extra_side - (width_latch_inside+clearance_design)/2 
+    pos1[1] += -(h - 15)/2
     pos1[2] += (15 - depth)  /2    
     p3["pos"] = pos1
     #p3["m"] = "#"
@@ -289,17 +293,15 @@ def get_latch_bottom(thing, **kwargs):
     p3["shape"] = f"oobb_cube"
     w = width_latch
     extra_test = 3
-    
-    h = 5 
+    radius_corner = 5
+    h = h  - radius_corner
     if test:
         h += extra_test
     d = depth - depth_lid_overhang    
     size = [w, h, d]
     p3["size"] = size
     pos1 = copy.deepcopy(pos1)
-    pos1[1] += 7.5  - h / 2
-    if test:
-        pos1[1] += extra_test
+    pos1[1] += radius_corner/2 + extra_test/2
     pos1[2] += (15 - depth)  /2    
     p3["pos"] = pos1
     #p3["m"] = "#"
