@@ -693,12 +693,12 @@ def get_latch_top(thing, **kwargs):
     p3["type"] = "p"
     p3["shape"] = f"oobb_cube"
     w = width_latch_inside
-    h = ((height-0.5)*15) + diameter_latch_inside/2
+    h = diameter_latch_inside + extra_lid_overhang
     d = depth_lid + depth_lid_overhang
     size = [w, h, d]
     p3["size"] = size
     pos1 = copy.deepcopy(pos)
-    pos1[1] += ((height-0.5)*15) / 2 - diameter_latch_inside/4
+    pos1[1] += extra_lid_overhang/2
     pos1[2] += depth/2 - depth_lid_overhang
     p3["pos"] = pos1
     #p3["m"] = "#"
