@@ -1019,7 +1019,7 @@ def get_lid_array(thing, **kwargs):
     oobb_base.append_full(thing,**p3)
 
     #add inner lip clearance
-    get_lid_array_clearance(thing, **kwargs)
+    #get_lid_array_clearance(thing, **kwargs)
 
 def get_lid_array_clearance(thing, **kwargs):
 
@@ -1215,9 +1215,11 @@ def get_main_body_array(thing, **kwargs):
     p3["width"] = width_full + extra_size
     p3["height"] = height_full + extra_size
     p3["extra_mm"] = True
-    #p3["m"] = "#"
+    p3["m"] = "#"
     pos1 = copy.deepcopy(pos)         
     p3["pos"] = pos1
+    r = 5 + (extra_size * 15)/2
+    p3["radius"] = r
     oobb_base.append_full(thing,**p3)
     
     global clearance_bottom
