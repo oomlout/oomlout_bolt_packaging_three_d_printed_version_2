@@ -5,7 +5,7 @@ import oobb_base
 
 clearance_design = 1
 cd = clearance_design
-clearance_wall = 1/2
+clearance_wall = 2
 clearance_bottom = 2
 clearance_lid = 2
 
@@ -41,11 +41,11 @@ def main(**kwargs):
 def make_scad(**kwargs):
     parts = []
 
-    #run_fast_fast = True
-    run_fast_fast = False
+    run_fast_fast = True
+    #run_fast_fast = False
     
-    run_fast = True
-    #run_fast = False
+    #run_fast = True
+    run_fast = False
 
     # save_type variables
     if True:
@@ -1514,64 +1514,6 @@ def get_main_body_array(thing, **kwargs):
     pos1 = copy.deepcopy(pos)         
     p3["pos"] = pos1
     oobb_base.append_full(thing,**p3)
-    
-    #add plate hinge_support 
-    #no longer used
-    # p3 = copy.deepcopy(kwargs)
-    # p3["type"] = "p"
-    # p3["shape"] = f"oobb_plate"    
-    # p3["depth"] = depth_hinge_support
-    # p3["width"] = 1 + extra_size
-    # p3["height"] = height_tray_tray + 1 + extra_size
-    # p3["extra_mm"] = True
-    # poss = []
-    # pos1 = copy.deepcopy(pos)    
-    # pos1[1] += 15/2
-    # pos11 = copy.deepcopy(pos1)
-    # pos11[0] += width_tray_tray * 15 / 2 - 15/2
-    # pos12 = copy.deepcopy(pos1)
-    # pos12[0] += -(width_tray_tray * 15 / 2 - 15/2)
-    # poss.append(pos11)
-    # poss.append(pos12)
-    # p3["pos"] = poss
-    # oobb_base.append_full(thing,**p3)
-    
-
-
-    #add holes
-    #no lnoger used
-    # p3 = copy.deepcopy(kwargs)
-    # p3["type"] = "n"
-    # p3["shape"] = f"oobb_hole"
-    # p3["radius_name"] = "m6"         
-    # p3["width"] = width_tray_tray
-    # p3["height"] = height_tray_tray    
-    # poss = []
-    # pos1 = copy.deepcopy(pos)
-    # pos1[1] += height_tray_tray* 15/2 + 15/2
-    # pos11 = copy.deepcopy(pos1)
-    # pos11[0] += width_tray_tray * 15 / 2 - 15/2
-    # pos12 = copy.deepcopy(pos1)
-    # pos12[0] += -(width_tray_tray * 15 / 2 - 15/2)
-    # poss.append(pos11)
-    # poss.append(pos12)
-    # p3["pos"] = poss
-    # #p3["m"] = "#"
-    # oobb_base.append_full(thing,**p3)
-    
-    #add m6 nuts
-    #no longer used
-    # p3 = copy.deepcopy(kwargs)
-    # p3["type"] = "n"
-    # p3["shape"] = f"oobb_nut"
-    # p3["radius_name"] = "m6"
-    # p3["pos"] = poss
-    # p3["overhang"] = True
-    # #p3["m"] = "#"
-    # oobb_base.append_full(thing,**p3)
-    
-
-    
     
     global clearance_bottom
 
