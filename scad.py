@@ -54,6 +54,7 @@ def make_scad(**kwargs):
         #filter = "hinge"
         #filter = "lid"
         #filter = "latch"
+        #filter = "latch_knob"
 
         #kwargs["save_type"] = "none"
         kwargs["save_type"] = "all"
@@ -203,6 +204,15 @@ def make_scad(**kwargs):
         p3["height"] = 1
         part["kwargs"] = p3
         part["name"] = "latch"
+        parts.append(part)
+        
+        part = copy.deepcopy(part_default)
+        p3 = copy.deepcopy(kwargs)
+        p3["thickness"] = 5
+        p3["width"] = 1
+        p3["height"] = 1
+        part["kwargs"] = p3
+        part["name"] = "latch_knob"
         parts.append(part)
 
         
@@ -500,7 +510,7 @@ def get_latch(thing, **kwargs):
     pos = kwargs.get("pos", [0, 0, 0])
     p3 = copy.deepcopy(kwargs)
     pos1 = copy.deepcopy(pos)
-    #pos1[0] += 135
+    pos1[0] += 135
     p3["pos"] = pos1
     p3["test"] = True
     get_latch_bottom(thing, **p3)
@@ -514,7 +524,7 @@ def get_latch(thing, **kwargs):
     
     p3 = copy.deepcopy(kwargs)
     pos1 = copy.deepcopy(pos)
-    pos1[0] += 90
+    #pos1[0] += 90
     p3["pos"] = pos1
     
     get_latch_knob(thing, **p3)
@@ -785,6 +795,31 @@ def get_latch_knob(thing, **kwargs):
     p3["pos"] = pos1
     p3["hole"] = True
     #p3["m"] = "#"
+    oobb_base.append_full(thing,**p3)
+
+    #add knurling
+    p3 = copy.deepcopy(kwargs)
+    p3["type"] = "n"
+    p3["shape"] = f"oobb_cube_new"
+    w = 3
+    h = 3
+    d = width_latch_knob
+    size = [w, h, d]
+    p3["size"] = size
+    pos1 = copy.deepcopy(pos)
+    pos1[1] += 0
+    pos1[2] += 0
+    p3["zz"] = "middle"
+    p3["pos"] = pos1
+    #p3["m"] = "#"
+    p3["rot"] = [0, 0, 45]
+    rot_shifts = []
+    num_notches = 32
+    extra_shift = 1.5
+    for x in range(0, num_notches+1):
+        angle = 360/num_notches * x
+        rot_shifts.append([[diameter_latch_knob/2+extra_shift,0,0],[0,0,angle]])
+    p3["rot_shift"] = rot_shifts
     oobb_base.append_full(thing,**p3)
 
 
