@@ -82,6 +82,15 @@ difference() {
 				cylinder(h = 45, r = 1.8000000000);
 			}
 		}
+		translate(v = [24.0000000000, 0, 0]) {
+			cylinder(h = 5, r = 1.8000000000);
+		}
+		translate(v = [29.0000000000, 0, 0]) {
+			cylinder(h = 5, r = 1.8000000000);
+		}
+		translate(v = [34.0000000000, 0, 0]) {
+			cylinder(h = 5, r = 1.8000000000);
+		}
 		translate(v = [40.0000000000, 0, 0]) {
 			rotate(a = [0, 90, 0]) {
 				cylinder(h = 10, r = 1.8000000000);

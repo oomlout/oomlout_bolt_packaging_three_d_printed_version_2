@@ -6,7 +6,9 @@ import oobb_base
 clearance_design = 1
 cd = clearance_design
 clearance_wall = 1/2
-clearance_bottom = 1
+clearance_bottom = 2
+clearance_lid = 2
+
 
 width_hinge = 20
 width_hinge_inside = width_hinge - 10
@@ -39,8 +41,11 @@ def main(**kwargs):
 def make_scad(**kwargs):
     parts = []
 
-    run_fast = True
-    #run_fast = False
+    run_fast_fast = True
+    #run_fast_fast = False
+    
+    #run_fast = True
+    run_fast = False
 
     # save_type variables
     if True:
@@ -80,38 +85,45 @@ def make_scad(**kwargs):
         part_default["full_rotations"] = [0, 0, 0]
         
 
+        # tray layout
         sizes = []
         for i in range(1, 4):
             pass
-            if not run_fast:
+            if not run_fast and not run_fast_fast:
                 sizes.append({"width": i, "height": i})        
                 
-        if not run_fast:
+        if not run_fast and not run_fast_fast:
             sizes.append({"width": 5, "height": 2}) 
             sizes.append({"width": 4, "height": 2})
-            sizes.append({"width": 2, "height": 1})
             sizes.append({"width": 3, "height": 2})             
+            sizes.append({"width": 2, "height": 1})            
             sizes.append({"width": 4, "height": 3})
         
-        #sizes.append({"width": 2, "height": 1})             
-        sizes.append({"width": 3, "height": 3})             
-        
+        if run_fast_fast:
+            sizes.append({"width": 2, "height": 1})             
+        if run_fast:        
+            sizes.append({"width": 3, "height": 3})
 
+        # tray size individual                  
+        trays = []        
+        if run_fast_fast:
+            trays.append({"width": 2, "height": 2})
+        if run_fast:
+            trays.append({"width": 3, "height": 3})
         
-        
-
-
-        trays = []
-        trays.append({"width": 3, "height": 3})
-        #trays.append({"width": 2, "height": 2})
-        
-        if not run_fast:
+        if not run_fast and not run_fast_fast:
+            trays.append({"width": 2, "height": 2})   
             trays.append({"width": 3, "height": 2})   
             trays.append({"width": 3, "height": 3})
-        #thicknesses = [15]
-        thicknesses = [20]
-        if not run_fast:
-            thicknesses.append(20)
+        
+        # thickness
+        if run_fast_fast:
+            thicknesses = [15]
+        if run_fast:
+            thicknesses = [15,25]
+        if not run_fast and not run_fast_fast:
+            thicknesses = [15,20,25,30]
+            
         
 
         sizes_complete = []
@@ -165,7 +177,7 @@ def make_scad(**kwargs):
 
             part = copy.deepcopy(part)
             part["name"] = "lid"
-            part["kwargs"]["thickness"] = 1 # depth_lid
+            part["kwargs"]["thickness"] = clearance_lid # depth_lid
             parts.append(part)
 
         part = copy.deepcopy(part_default)
@@ -633,6 +645,35 @@ def get_latch_bottom(thing, **kwargs):
     p3["hole"] = False
     #p3["m"] = "#"
     oobb_base.append_full(thing,**p3)
+
+    # add lock bolt position viewing holes
+    p3 = copy.deepcopy(kwargs)
+    p3["type"] = "n"
+    p3["shape"] = f"oobb_hole"
+    p3["radius_name"] = "m3"
+    d = 5
+    p3["depth"] = d
+    p3["rot"] = [0, 0, 0]
+    if True:
+        poss = []
+        pos1 =  copy.deepcopy(pos)
+        #for 3 mm bolt
+        shift_closed = 10
+        shift_middle = shift_closed + 5
+        shift_open = shift_closed + 10
+        pos1[0] += width_latch_inside/2 + clearance_design/2 + extra_latch_side + width_latch_knob + clearance_design
+        pos11 = copy.deepcopy(pos1)
+        pos11[0] += shift_closed
+        pos12 = copy.deepcopy(pos1)
+        pos12[0] += shift_middle
+        pos13 = copy.deepcopy(pos1)
+        pos13[0] += shift_open
+        poss.append(pos11)
+        poss.append(pos12)
+        poss.append(pos13)    
+    p3["pos"] = poss
+    #p3["m"] = "#"
+    oobb_base.append_full(thing,**p3)
     
 
 def get_latch_top(thing, **kwargs):       
@@ -775,7 +816,7 @@ def get_lid(thing, **kwargs):
 
     #hinge variables
     #adding variables
-    depth_lid = 1
+    depth_lid = clearance_lid
     kwargs["depth_lid"] = depth_lid
 
     #hinge
@@ -940,161 +981,54 @@ def get_lid_array_hole_in_hinge_bottom_for_lip_clearance(thing, **kwargs):
     p3["radius"] = 5 + extra_size
     oobb_base.append_full(thing,**p3)
 
-    global width_hinge, width_hinge_inside, clearance_design
-
-    #add outer lip clearance for hing bottom
     if False:
-        #outside clearance
-        p3 = copy.deepcopy(kwargs)
-        p3["type"] = "n"
-        p3["shape"] = f"oobb_cube"
-
-        w = (width_hinge - width_hinge_inside)/2 + clearance_design
-        h = extra_lid_overhang
-        d = 10 # extra clearance for hinge maybe
-        #d = depth_lid_overhang # just the lip
-        size = [w, h, d]
-        p3["size"] = size
-        if True:        
-            #clearance for the hinge bottom piece
-            shift_hinge = kwargs.get("shift_hinge", None)
-            shift_shift = width_hinge/2
-            shift_outside = shift_hinge + shift_shift - w/2 + clearance_design
-            shift_inside = shift_hinge - shift_shift + w/2 - clearance_design
-            poss = []
-            pos1 = copy.deepcopy(pos)
-            pos1[2] += -depth_lid_overhang
-            pos1[1] += 0 - pos1[1] + extra_lid_overhang/2 
-            pos11 = copy.deepcopy(pos1)
-            
-            
-            pos11[0] += shift_outside 
-            pos12 = copy.deepcopy(pos1)
-            pos12[0] += shift_inside
-
-            pos13 = copy.deepcopy(pos1)
-            pos13[0] += -shift_outside
-            pos14 = copy.deepcopy(pos1)
-            pos14[0] += -shift_inside
-            poss.append(pos11)
-            poss.append(pos12)
-            poss.append(pos13)
-            poss.append(pos14)
-        p3["pos"] = poss
-        #p3["m"] = "#"
-        oobb_base.append_full(thing,**p3)
-
-    #clearanmce for the corners
-    if False:
-        #outside clearance two cubes
-        p3 = copy.deepcopy(kwargs)
-        p3["type"] = "n"
-        p3["shape"] = f"oobb_cube"
-
-        w = 10
-        h = 5
-        d = depth_lid_overhang
-        #d = depth_lid_overhang # just the lip
-        size = [w, h, d]
-        p3["size"] = size
-        if True:        
-            #clearance for the hinge bottom piece
-            shift_hinge = kwargs.get("shift_hinge", None)
-            shift_shift = width_hinge_inside/2 + w /2
-            shift_outside = shift_hinge + shift_shift
-            poss = []
-            pos1 = copy.deepcopy(pos)
-            pos1[2] += -depth_lid_overhang
-            pos1[1] += 0 - pos1[1] + extra_lid_overhang/2 
-            pos11 = copy.deepcopy(pos1)
-            pos11[0] += shift_outside 
-            pos13 = copy.deepcopy(pos1)
-            pos13[0] += -shift_outside
-            poss.append(pos11)
-            poss.append(pos13)
-        p3["pos"] = poss
-        #p3["m"] = "#"
-        oobb_base.append_full(thing,**p3)
-        
-        # second outside clearance cube
-        #outside clearance two cubes
-        p3 = copy.deepcopy(kwargs)
-        p3["type"] = "n"
-        p3["shape"] = f"oobb_cube"
-
-        w = 5
-        h = 4
-        d = depth_lid_overhang
-        #d = depth_lid_overhang # just the lip
-        size = [w, h, d]
-        p3["size"] = size
-        if True:        
-            #clearance for the hinge bottom piece
-            shift_hinge = kwargs.get("shift_hinge", None)
-            shift_shift = width_hinge_inside/2 + w * 3/2
-            shift_outside = shift_hinge + shift_shift
-            poss = []
-            pos1 = copy.deepcopy(pos)
-            pos1[2] += -depth_lid_overhang
-            pos1[1] += 0 - pos1[1] + extra_lid_overhang/2 + - h/2
-            pos11 = copy.deepcopy(pos1)
-            pos11[0] += shift_outside 
-            pos13 = copy.deepcopy(pos1)
-            pos13[0] += -shift_outside
-            poss.append(pos11)
-            poss.append(pos13)
-        p3["pos"] = poss
-        #p3["m"] = "#"
-        oobb_base.append_full(thing,**p3)
-
-    
-    
-    clearance_inset = 1.4
-    thickness_wall_inset = 0.5
-    for pocket in pocket_array:
-        depth_pocket = 1.5
-        shape_pocket = pocket.get("shape", default_shape_pocket)
-        global clearance_wall, clearance_bottom        
-        width_tray = pocket.get("width", 8)
-        height_tray = pocket.get("height", 8)
-        #main outline
-        p3 = copy.deepcopy(kwargs)
-        p3["type"] = "p"
-        r = 5 - (clearance_wall + clearance_inset * 2)/2
-        p3["radius"] = r
-        p3["shape"] = shape_pocket
-        p3["depth"] = depth_pocket
-        w = (width_tray * 15) - clearance_wall - clearance_inset * 2
-        h = (height_tray * 15) - clearance_wall - clearance_inset * 2
-        d = depth_pocket
-        p3["size"] = [w, h, d]
-        pos1 = copy.deepcopy(pocket["position"])
-        pos1[2] += -depth_pocket
-        p3["pos"] = pos1
-        if "sphere" in shape_pocket:
-            pass
-            #p3["radius"] = depth
-        #p3["m"] = "#"
-        oobb_base.append_full(thing,**p3)
-        #cutout
-        p3 = copy.deepcopy(kwargs)
-        p3["type"] = "n"
-        p3["shape"] = shape_pocket
-        r = 5 - (clearance_wall + clearance_inset * 2 + thickness_wall_inset * 2)/2
-        p3["radius"] = r
-        p3["depth"] = depth_pocket
-        w = (width_tray * 15) - clearance_wall - clearance_inset * 2 - thickness_wall_inset * 2
-        h = (height_tray * 15) - clearance_wall - clearance_inset * 2 - thickness_wall_inset * 2
-        d = depth_pocket
-        p3["size"] = [w, h, d]
-        pos1 = copy.deepcopy(pocket["position"])
-        pos1[2] += -depth_pocket
-        p3["pos"] = pos1
-        if "sphere" in shape_pocket:
-            pass
-            #p3["radius"] = depth
-        #p3["m"] = "#"
-        oobb_base.append_full(thing,**p3)
+        global width_hinge, width_hinge_inside, clearance_design
+        clearance_inset = 1.4
+        thickness_wall_inset = 0.5
+        for pocket in pocket_array:
+            depth_pocket = 1.5
+            shape_pocket = pocket.get("shape", default_shape_pocket)
+            global clearance_wall, clearance_bottom        
+            width_tray = pocket.get("width", 8)
+            height_tray = pocket.get("height", 8)
+            #main outline
+            p3 = copy.deepcopy(kwargs)
+            p3["type"] = "p"
+            r = 5 - (clearance_wall + clearance_inset * 2)/2
+            p3["radius"] = r
+            p3["shape"] = shape_pocket
+            p3["depth"] = depth_pocket
+            w = (width_tray * 15) - clearance_wall - clearance_inset * 2
+            h = (height_tray * 15) - clearance_wall - clearance_inset * 2
+            d = depth_pocket
+            p3["size"] = [w, h, d]
+            pos1 = copy.deepcopy(pocket["position"])
+            pos1[2] += -depth_pocket
+            p3["pos"] = pos1
+            if "sphere" in shape_pocket:
+                pass
+                #p3["radius"] = depth
+            #p3["m"] = "#"
+            oobb_base.append_full(thing,**p3)
+            #cutout
+            p3 = copy.deepcopy(kwargs)
+            p3["type"] = "n"
+            p3["shape"] = shape_pocket
+            r = 5 - (clearance_wall + clearance_inset * 2 + thickness_wall_inset * 2)/2
+            p3["radius"] = r
+            p3["depth"] = depth_pocket
+            w = (width_tray * 15) - clearance_wall - clearance_inset * 2 - thickness_wall_inset * 2
+            h = (height_tray * 15) - clearance_wall - clearance_inset * 2 - thickness_wall_inset * 2
+            d = depth_pocket
+            p3["size"] = [w, h, d]
+            pos1 = copy.deepcopy(pocket["position"])
+            pos1[2] += -depth_pocket
+            p3["pos"] = pos1
+            if "sphere" in shape_pocket:
+                pass
+                #p3["radius"] = depth
+            #p3["m"] = "#"
+            oobb_base.append_full(thing,**p3)
 
 
 
