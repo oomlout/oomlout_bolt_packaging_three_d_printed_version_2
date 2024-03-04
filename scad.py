@@ -5,7 +5,7 @@ import oobb_base
 
 clearance_design = 1
 cd = clearance_design
-clearance_wall = 1 #thickness of the walls
+clearance_wall = 2 #thickness of the walls
 clearance_bottom = 2
 clearance_lid = 2
 
