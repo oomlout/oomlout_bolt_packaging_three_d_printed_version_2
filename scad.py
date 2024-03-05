@@ -42,11 +42,11 @@ def main(**kwargs):
 def make_scad(**kwargs):
     parts = []
 
-    run_fast_fast = True
-    #run_fast_fast = False
+    #run_fast_fast = True
+    run_fast_fast = False
     
-    #run_fast = True
-    run_fast = False
+    run_fast = True
+    #run_fast = False
 
     # save_type variables
     if True:
@@ -1215,7 +1215,7 @@ def get_main_body_array(thing, **kwargs):
     p3["width"] = width_full + extra_size
     p3["height"] = height_full + extra_size
     p3["extra_mm"] = True
-    p3["m"] = "#"
+    #p3["m"] = "#"
     pos1 = copy.deepcopy(pos)         
     p3["pos"] = pos1
     r = 5 + (extra_size * 15)/2
