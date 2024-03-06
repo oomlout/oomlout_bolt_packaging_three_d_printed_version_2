@@ -5,7 +5,7 @@ import oobb_base
 
 clearance_design = 1
 cd = clearance_design
-clearance_wall = 2 #thickness of the walls
+clearance_wall = 1 #thickness of the walls
 clearance_bottom = 2
 clearance_lid = 2
 
@@ -42,10 +42,10 @@ def main(**kwargs):
 def make_scad(**kwargs):
     parts = []
 
-    #run_fast_fast = True
-    run_fast_fast = False
+    run_fast_fast = True
+    #run_fast_fast = False
     
-    run_fast = True
+    #run_fast = True
     #run_fast = False
 
     # save_type variables
