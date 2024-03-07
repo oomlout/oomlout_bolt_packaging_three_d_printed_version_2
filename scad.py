@@ -42,8 +42,8 @@ def main(**kwargs):
 def make_scad(**kwargs):
     parts = []
 
-    run_fast_fast = True
-    #run_fast_fast = False
+    #run_fast_fast = True
+    run_fast_fast = False
     
     #run_fast = True
     run_fast = False
